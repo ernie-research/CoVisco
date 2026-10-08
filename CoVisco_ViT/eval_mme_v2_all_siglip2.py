@@ -5,9 +5,9 @@ task implementations and distributed evaluator, but changes both sides of the
 image-caption space:
 
   text:   ViT-gopt-16-SigLIP2-384, pretrained="webli"
-  vision: OneVision output ``to_image_caption`` with ``modality="image"``
+  vision: CoVisco output ``to_image_caption`` with ``modality="image"``
 
-The OneVision checkpoint must have been trained with
+The CoVisco checkpoint must have been trained with
 ``image_caption_embed_dim=1536``.
 """
 

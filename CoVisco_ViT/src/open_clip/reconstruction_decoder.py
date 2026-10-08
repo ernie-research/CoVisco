@@ -2,7 +2,7 @@
 Reconstruction Decoder for CoVisco SigLIP Training
 
 This module implements a lightweight transformer decoder that reconstructs
-image tokens from OneVision's query tokens. The decoder uses learnable query
+image tokens from CoVisco's query tokens. The decoder uses learnable query
 tokens that attend to the encoded query tokens (as key/value) to reconstruct
 the original ViT patch tokens.
 """
@@ -88,7 +88,7 @@ class ReconstructionDecoder(nn.Module):
 
     Mechanism:
     - Learnable query tokens serve as the initial queries
-    - OneVision's output query tokens serve as Key/Value
+    - CoVisco's output query tokens serve as Key/Value
     - The decoder reconstructs the original ViT patch tokens
 
     Two independent sets of reconstruct_queries are maintained:
@@ -177,7 +177,7 @@ class ReconstructionDecoder(nn.Module):
         Forward pass of the reconstruction decoder.
 
         Args:
-            query_tokens: OneVision encoder's query tokens (B, num_seg, N_q_enc, D)
+            query_tokens: CoVisco encoder's query tokens (B, num_seg, N_q_enc, D)
             return_attentions: Whether to return attention weights
 
         Returns:

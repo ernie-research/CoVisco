@@ -309,7 +309,7 @@ def main():
     )
     cli_args = parser.parse_args()
 
-    tmp_dir = tempfile.mkdtemp(prefix="onevision_test_")
+    tmp_dir = tempfile.mkdtemp(prefix="covisco_test_")
     logs_dir = os.path.join(tmp_dir, "logs")
 
     try:

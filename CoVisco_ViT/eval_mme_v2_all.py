@@ -235,7 +235,7 @@ def load_model(ckpt_path, video_caption_embed_dim, device, image_size=224,
         use_head=True, output_dim=1024,
     )
     model = CoViscoModel(
-        onevision_config=config,
+        covisco_config=config,
         image_embed_dim=1536,
         image_caption_embed_dim=1536,
         video_caption_embed_dim=video_caption_embed_dim,

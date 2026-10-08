@@ -3,7 +3,7 @@ Token Selector Module for CoVisco SigLIP
 
 This file is a home for different *token selector* designs. A token
 selector consumes the per-segment query tokens (the summary tokens
-produced by OneVision) together with the corresponding fine-grained ViT
+produced by CoVisco) together with the corresponding fine-grained ViT
 tokens, and returns a small subset of the fine-grained tokens that best
 complement the query tokens.
 

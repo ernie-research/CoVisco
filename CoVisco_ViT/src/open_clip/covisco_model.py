@@ -1,11 +1,11 @@
 """
 CoVisco SigLIP Model
 
-This module implements a OneVision model with multiple projection heads for
+This module implements a CoVisco model with multiple projection heads for
 SigLIP training using pre-extracted embeddings as supervision signals.
 
 The model includes:
-1. OneVision encoder (trainable)
+1. CoVisco encoder (trainable)
 2. Multiple projection heads (to_image, to_image_caption, to_video_caption)
 3. Independent logit_scale and logit_bias for each contrast pair
 4. Optional reconstruction decoder
@@ -38,14 +38,14 @@ class ContrastiveHead(torch.nn.Module):
 
 class CoViscoModel(nn.Module):
     """
-    OneVision model with multiple projection heads for SigLIP training.
+    CoVisco model with multiple projection heads for SigLIP training.
 
     Each contrast pair (image-caption, image-image, video-caption) uses independent
     logit_scale and logit_bias parameters, allowing different modalities to have
     different temperature and bias values.
 
     Args:
-        onevision_config: CoViscoEncoderConfig for the vision encoder
+        covisco_config: CoViscoEncoderConfig for the vision encoder
         image_embed_dim: Dimension of pre-extracted image embeddings
         image_caption_embed_dim: Dimension of pre-extracted image caption text embeddings
         video_caption_embed_dim: Dimension of pre-extracted video caption text embeddings
@@ -63,7 +63,7 @@ class CoViscoModel(nn.Module):
 
     def __init__(
         self,
-        onevision_config: CoViscoEncoderConfig,
+        covisco_config: CoViscoEncoderConfig,
         image_embed_dim: int = 1024,
         image_caption_embed_dim: int = 1024,
         video_caption_embed_dim: int = 1024,
@@ -86,23 +86,23 @@ class CoViscoModel(nn.Module):
     ):
         super().__init__()
 
-        self.hidden_size = onevision_config.hidden_size
-        self.num_query_per_seg = onevision_config.num_query_per_seg
+        self.hidden_size = covisco_config.hidden_size
+        self.num_query_per_seg = covisco_config.num_query_per_seg
 
-        # 1. OneVision Encoder (trainable)
-        self.encoder = CoViscoEncoderModel(onevision_config)
+        # 1. CoVisco Encoder (trainable)
+        self.encoder = CoViscoEncoderModel(covisco_config)
         # Create a visual attribute for compatibility with factory code
         self.visual = self.encoder
 
         # 2. Multiple projection heads
-        self.proj_to_image = ContrastiveHead(onevision_config.hidden_size, image_embed_dim)
-        self.proj_to_image_caption = ContrastiveHead(onevision_config.hidden_size, image_caption_embed_dim)
-        self.proj_to_video_caption = ContrastiveHead(onevision_config.hidden_size, video_caption_embed_dim)
+        self.proj_to_image = ContrastiveHead(covisco_config.hidden_size, image_embed_dim)
+        self.proj_to_image_caption = ContrastiveHead(covisco_config.hidden_size, image_caption_embed_dim)
+        self.proj_to_video_caption = ContrastiveHead(covisco_config.hidden_size, video_caption_embed_dim)
         
         
         # self.proj_to_video_caption = nn.Parameter(
-        #     torch.randn(onevision_config.hidden_size, text_embed_dim)
-        #     / onevision_config.hidden_size ** 0.5
+        #     torch.randn(covisco_config.hidden_size, text_embed_dim)
+        #     / covisco_config.hidden_size ** 0.5
         # )
 
         # 3. Independent logit_scale for each contrast pair
@@ -131,7 +131,7 @@ class CoViscoModel(nn.Module):
         self.use_reconstruction = use_reconstruction
         if use_reconstruction:
             self.reconstruction_decoder = ReconstructionDecoder(
-                hidden_size=onevision_config.hidden_size,
+                hidden_size=covisco_config.hidden_size,
                 num_image_query_tokens=decoder_num_image_queries,
                 num_video_query_tokens=decoder_num_video_queries,
                 num_layers=decoder_layers,

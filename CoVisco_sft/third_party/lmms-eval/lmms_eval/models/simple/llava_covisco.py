@@ -1,7 +1,7 @@
 """
 llava_covisco.py — CoVisco + Qwen3 模型的 lmms-eval 适配器。
 
-支持 onevision_siglip_llm_sft 项目训练的模型，用于评测图像/视频 benchmarks。
+支持 CoVisco 项目训练的模型，用于评测图像/视频 benchmarks。
 """
 import torch
 
@@ -35,15 +35,15 @@ from loguru import logger as eval_logger
 
 # ============ Model Import ============
 # 本文件位于 <repo>/third_party/lmms-eval/lmms_eval/models/simple/ 下，
-# 向上 6 层 (parents[5]) 即 onevision_siglip_llm_sft 仓库根目录。
+# 向上 6 层 (parents[5]) 即 CoVisco 仓库根目录。
 # 加入 sys.path 后即可 import 仓库内的 models/ 包，不再依赖外部 PYTHONPATH。
-ONEVISION_SIGLIP_ROOT = Path(__file__).resolve().parents[5]
-if (ONEVISION_SIGLIP_ROOT / "models" / "config.py").exists():
-    if str(ONEVISION_SIGLIP_ROOT) not in sys.path:
-        sys.path.insert(0, str(ONEVISION_SIGLIP_ROOT))
+COVISCO_ROOT = Path(__file__).resolve().parents[5]
+if (COVISCO_ROOT / "models" / "config.py").exists():
+    if str(COVISCO_ROOT) not in sys.path:
+        sys.path.insert(0, str(COVISCO_ROOT))
 else:
     eval_logger.warning(
-        f"onevision_siglip_llm_sft repo root not found at {ONEVISION_SIGLIP_ROOT}; "
+        f"CoVisco repo root not found at {COVISCO_ROOT}; "
         f"falling back to PYTHONPATH for the models/ package"
     )
 

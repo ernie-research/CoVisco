@@ -110,7 +110,7 @@ def load_vision_model(hf_model: str, device: str = "cpu", image_size=None,
 
     # The released CoViscoModel is a transformers.PreTrainedModel built from a
     # CoViscoConfig (which wraps these dicts), not the old keyword API
-    # ``CoViscoModel(onevision_config=..., **covisco_cfg)``.
+    # ``CoViscoModel(covisco_config=..., **covisco_cfg)``.
     config = covisco_model.CoViscoConfig(
         covisco_encoder_cfg=enc_kwargs,
         covisco_cfg=covisco_kwargs,

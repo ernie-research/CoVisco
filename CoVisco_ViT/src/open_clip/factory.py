@@ -489,7 +489,7 @@ def create_model(
         from .covisco_vit import CoViscoEncoderConfig
 
         # Create CoVisco encoder config
-        onevision_config = CoViscoEncoderConfig(
+        covisco_config = CoViscoEncoderConfig(
             hidden_size=vision_cfg.get('width', 1024),
             num_hidden_layers=vision_cfg.get('layers', 24),
             num_attention_heads=vision_cfg.get('width', 1024) // vision_cfg.get('head_width', 64),
@@ -506,7 +506,7 @@ def create_model(
         args = model_kwargs.get('args', {})
 
         model = CoViscoModel(
-            onevision_config=onevision_config,
+            covisco_config=covisco_config,
             image_embed_dim=getattr(args, 'image_embed_dim', 1024),
             image_caption_embed_dim=getattr(args, 'image_caption_embed_dim', 1024),
             video_caption_embed_dim=getattr(args, 'video_caption_embed_dim', 1024),

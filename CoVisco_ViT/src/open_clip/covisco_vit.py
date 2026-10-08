@@ -94,8 +94,8 @@ def uniform_sample_frames_and_concat(pixel_values, num_frames=16, concat_mode='h
 class CoViscoEncoderConfig(PretrainedConfig):
     r"""
     This is the configuration class to store the configuration of a [`CoViscoEncoderModel`]. It is used to instantiate a
-    OneVision Encoder model according to the specified arguments, defining the model architecture. Instantiating a configuration
-    with the defaults will yield a similar configuration to that of the OneVision Encoder architecture.
+    CoVisco Encoder model according to the specified arguments, defining the model architecture. Instantiating a configuration
+    with the defaults will yield a similar configuration to that of the CoVisco Encoder architecture.
 
     Configuration objects inherit from [`PretrainedConfig`] and can be used to control the model outputs. Read the
     documentation from [`PretrainedConfig`] for more information.
@@ -213,7 +213,7 @@ logger = logging.get_logger(__name__)
 # Model Docstrings
 # ---------------------------------------------------------------------------
 
-ONEVISION_ENCODER_START_DOCSTRING = r"""
+COVISCO_ENCODER_START_DOCSTRING = r"""
     This model inherits from [`PreTrainedModel`]. Check the superclass documentation for the generic methods the
     library implements for all its model (such as downloading or saving, resizing the input embeddings, pruning heads
     etc.)
@@ -228,7 +228,7 @@ ONEVISION_ENCODER_START_DOCSTRING = r"""
             configuration. Check out the [`~PreTrainedModel.from_pretrained`] method to load the model weights.
 """
 
-ONEVISION_ENCODER_INPUTS_DOCSTRING = r"""
+COVISCO_ENCODER_INPUTS_DOCSTRING = r"""
     Args:
         pixel_values (`torch.FloatTensor` of shape `(batch_size, num_channels, height, width)` or `(batch_size, num_channels, num_frames, height, width)`):
             Pixel values. Pixel values can be obtained using [`AutoImageProcessor`].
@@ -714,7 +714,7 @@ class CoViscoEncoderFlashAttention2(nn.Module):
         return attn_output, None
 
 
-ONEVISION_ENCODER_ATTENTION_CLASSES = {
+COVISCO_ENCODER_ATTENTION_CLASSES = {
     "eager": CoViscoEncoderAttention,
     "flash_attention_2": CoViscoEncoderFlashAttention2,
 }
@@ -727,16 +727,16 @@ class CoViscoEncoderEncoderLayer(nn.Module):
         self.num_query_per_seg=config.num_query_per_seg
         # Get attention implementation from config, default to "flash_attention_2"
         attn_implementation = getattr(config, "_attn_implementation", "flash_attention_2")
-        if attn_implementation not in ONEVISION_ENCODER_ATTENTION_CLASSES:
+        if attn_implementation not in COVISCO_ENCODER_ATTENTION_CLASSES:
             # Fallback to eager if flash_attention_2 is not available
             if not _flash_attn_available and attn_implementation == "flash_attention_2":
                 attn_implementation = "eager"
             else:
                 raise ValueError(
                     f"Unknown attention implementation: {attn_implementation}. "
-                    f"Available implementations: {list(ONEVISION_ENCODER_ATTENTION_CLASSES.keys())}"
+                    f"Available implementations: {list(COVISCO_ENCODER_ATTENTION_CLASSES.keys())}"
                 )
-        self.self_attn = ONEVISION_ENCODER_ATTENTION_CLASSES[attn_implementation](config)
+        self.self_attn = COVISCO_ENCODER_ATTENTION_CLASSES[attn_implementation](config)
         self.layer_norm1 = get_norm_layer(config)
         self.mlp = SiglipMLP(config)
         self.layer_norm2 = get_norm_layer(config)
@@ -886,8 +886,8 @@ class CoViscoEncoderEncoder(nn.Module):
 
 
 @add_start_docstrings(
-    "The bare OneVision Encoder Model outputting raw hidden-states without any specific head on top.",
-    ONEVISION_ENCODER_START_DOCSTRING,
+    "The bare CoVisco Encoder Model outputting raw hidden-states without any specific head on top.",
+    COVISCO_ENCODER_START_DOCSTRING,
 )
 class CoViscoEncoderPreTrainedModel(PreTrainedModel):
     config_class = CoViscoEncoderConfig
@@ -915,8 +915,8 @@ class CoViscoEncoderPreTrainedModel(PreTrainedModel):
 
 
 @add_start_docstrings(
-    "OneVision Encoder Model with a vision transformer encoder.",
-    ONEVISION_ENCODER_START_DOCSTRING,
+    "CoVisco Encoder Model with a vision transformer encoder.",
+    COVISCO_ENCODER_START_DOCSTRING,
 )
 class CoViscoEncoderModel(CoViscoEncoderPreTrainedModel):
     def __init__(self, config: CoViscoEncoderConfig):
@@ -1232,7 +1232,7 @@ class CoViscoEncoderModel(CoViscoEncoderPreTrainedModel):
         return pixel_values, freqs_visible
     
    
-    @add_start_docstrings_to_model_forward(ONEVISION_ENCODER_INPUTS_DOCSTRING)
+    @add_start_docstrings_to_model_forward(COVISCO_ENCODER_INPUTS_DOCSTRING)
     @replace_return_docstrings(output_type=BaseModelOutputWithPooling, config_class=CoViscoEncoderConfig)
     def forward(
         self,
@@ -1255,8 +1255,8 @@ class CoViscoEncoderModel(CoViscoEncoderPreTrainedModel):
         >>> from transformers import AutoModel, AutoImageProcessor
         >>> from PIL import Image
 
-        >>> model = AutoModel.from_pretrained("lmms-lab-encoder/onevision-encoder-large", trust_remote_code=True)
-        >>> preprocessor = AutoImageProcessor.from_pretrained("lmms-lab-encoder/onevision-encoder-large", trust_remote_code=True)
+        >>> model = AutoModel.from_pretrained("CoVisco-L-14", trust_remote_code=True)
+        >>> preprocessor = AutoImageProcessor.from_pretrained("CoVisco-L-14", trust_remote_code=True)
         >>> image = Image.open("path/to/your/image.jpg")  # Replace with your image path
         >>> pixel_values = preprocessor(images=image, return_tensors="pt")["pixel_values"]
         >>> outputs = model(pixel_values)

@@ -102,7 +102,7 @@ def load_vision_model(ckpt_path: str, video_caption_embed_dim: int, device: str)
         use_head=True, output_dim=1024,
     )
     model = CoViscoModel(
-        onevision_config=config,
+        covisco_config=config,
         image_embed_dim=1536,
         image_caption_embed_dim=1536,       # matches SigLIP2-gopt-384 embed_dim
         video_caption_embed_dim=video_caption_embed_dim,

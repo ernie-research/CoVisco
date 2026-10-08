@@ -85,7 +85,7 @@ def load_vision_model(ckpt_path, video_caption_embed_dim, image_size, device):
         use_head=True, output_dim=1024,
     )
     model = CoViscoModel(
-        onevision_config=config,
+        covisco_config=config,
         image_embed_dim=1536,
         image_caption_embed_dim=1536,   # matches SigLIP2-gopt-384 text embed dim
         video_caption_embed_dim=video_caption_embed_dim,
@@ -191,7 +191,7 @@ def build_native_preprocess(patch_size=_PATCH_SIZE, max_side=1400, min_side=None
       * scales so the long side <= `max_side` (memory cap),
       * rounds each side to a multiple of `patch_size` (>= `min_side`).
 
-    The OneVision vision tower is RoPE-only (no learned position table) and
+    The CoVisco vision tower is RoPE-only (no learned position table) and
     derives its patch grid as h=H//patch_size, w=W//patch_size at runtime, so it
     accepts any such H x W (including non-square). A batch is a single dense
     tensor with no resolution packing, so callers must encode one image at a
