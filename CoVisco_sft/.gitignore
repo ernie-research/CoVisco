@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.Python
+
+# Local eval artifacts and caches
+logs/
+output/
+eval_results/
+.hf_cache/
+*.egg-info/
+.eggs/
+dist/
+build/

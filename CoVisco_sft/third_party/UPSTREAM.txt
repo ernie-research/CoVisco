@@ -1,0 +1,35 @@
+lmms-eval (vendored)
+====================
+upstream:  https://github.com/EvolvingLMMs-Lab/lmms-eval
+version:   0.5.0 (pyproject.toml)
+copied at: 2026-08-21
+copied from: OneVision-Encoder/llava_next/lmms-eval
+             (OneVision-Encoder commit cdc7456df059801226bc075398ab24b09822a4aa)
+
+This directory is a snapshot of upstream third-party code. Do not modify it by
+hand except for the local changes listed below, so that it can be diffed/merged
+against upstream in the future.
+
+Local changes (five):
+  1. lmms_eval/models/__init__.py
+     Added one entry to AVAILABLE_SIMPLE_MODELS:
+       "llava_covisco": "LlavaCoVisco"
+  2. lmms_eval/models/simple/llava_covisco.py  (new file in this repo)
+     Evaluation adapter for CoVisco + Qwen3.
+  3. pyproject.toml
+     Upstream uses license = "MIT" + license-files = ["LICENSE"] (PEP 639),
+     which requires setuptools>=77; with setuptools 75.8.0 in this environment
+     the `project.license` validation fails, so it was changed to
+     license = { text = "MIT" }. Revert to the upstream form after upgrading
+     to setuptools>=77.
+  4. lmms_eval/tasks/nextqa/stopwords.csv  (restored missing file)
+     This file was dropped when the snapshot was copied, but tasks/nextqa/utils.py
+     reads it at import time, causing the nextqa task to fail to load. Content is
+     the nltk English stopword list.
+  5. lmms_eval/tasks/mvbench/utils.py
+     In mvbench_process_results, gt and candidates are now compared as strings,
+     fixing a crash on the moving_count / action_count subtasks where answer was
+     an int.
+
+Install:
+  pip install -e third_party/lmms-eval --no-deps --no-build-isolation

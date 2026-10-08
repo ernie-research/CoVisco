@@ -1,0 +1,61 @@
+name: covisco-qwen3-4b-instruct2507
+
+vit:
+  name: CoVisco-L-14
+  pretrained_path: /path/to/CoVisco-L-14.pt
+  hidden_size: 1024
+  num_layers: 24
+  num_attention_heads: 16
+  intermediate_size: 4096
+  num_query_per_seg: 100
+  segment_t_size: 32
+  patch_size: 14
+  image_size: 224
+  num_channels: 3
+  rope_theta: 10000.0
+  layer_norm_eps: 1.0e-06
+  initializer_range: 0.02
+
+projector:
+  type: two_layer_mlp
+  sms: 1
+  ffn_mult: 2
+
+llm:
+  name: Qwen3-4B-Instruct2507
+  path: /path/to/data/your_user/onevision/Qwen3-4B-Instruct-2507
+  hidden_size: 2560
+  num_layers: 36
+  num_attention_heads: 32
+  image_pad_token_id: 151655
+  vision_start_token_id: 151652
+  vision_end_token_id: 151653
+  freeze: false
+
+token_strategy:
+  enabled: true
+   # p_query_only: 0.25
+  # p_vit_only: 0.25
+  # p_query_and_vit: 0.5
+  # Optional: per-modality strategy probabilities (the three entries must sum to 1). When these two are omitted, images/videos share the p_* above.
+  p_image: {query_only: 0.2, vit_only: 0.45, query_and_vit: 0.35}
+  p_video: {query_only: 0.30, vit_only: 0.0, query_and_vit: 0.7}
+  # vit_token_ratios: [0.4, 0.5,0.6]  # query_and_vit mode: candidate retention ratios over all vit patches
+  # Optional: per-modality ratio candidates (each entry must be in (0,1]). When omitted, images/videos share vit_token_ratios above.
+  vit_token_ratios_image: [0.3,0.4, 0.5, 0.6, 0.7, 0.8]
+  vit_token_ratios_video: [0.15,0.2, 0.3, 0.4, 0.5, 0.6]
+  arrangement: interleave
+  vit_token_counts_image: [256]   # vit_only images: full 256 patch tokens per segment (224/14^2=256) # actually computed automatically under dynamic resolution
+  vit_token_counts_video: [1024]   # vit_only videos: full 1024 patch tokens per segment. Unlike images, videos use fixed resolution, so this is used
+
+token_selector:
+  method: straight_through
+  score_activation: sigmoid
+  num_layers: 2
+  num_heads: 8
+  gumbel_temperature: 1.0
+  mmr_lambda: 0.3         # MMR diversity weight at inference (0.0 = off, >0 = on)
+  logit_scale: 4.0        # logit soft bound s*tanh(logit/s) to prevent sigmoid saturation / dead gradients (0 = unlimited)
+
+sparsity_lambda: 0.001  # token selector sparsity regularization coefficient
+first_frame_max_ratio: 0.8  # First-frame token ratio cap at inference (0.0 = unlimited, video only)

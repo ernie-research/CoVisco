@@ -1,0 +1,83 @@
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+[project]
+name = "open_clip_torch"
+authors = [
+    {name = "Yulong Liu"},
+    {name = "Xiaotian Han"},
+    {name = "Junyuan Shang"},
+    {name = "Yuchen Ding"},
+    {name = "Zhenyu Zhang"},
+    {name = "Shuohuan Wang"},
+    {name = "Guibo Zhu"},
+    {name = "Sirui Han"},
+    {name = "Dianhai Yu"},
+]
+description = "Open reproduction of consastive language-image pretraining (CLIP) and related."
+readme = "README.md"
+requires-python = ">=3.9"
+keywords = ["pytorch", "clip", "image-text", "language-image", "multimodal"]
+license = {text = "MIT"}
+classifiers = [
+        'Development Status :: 4 - Beta',
+        'Intended Audience :: Education',
+        'Intended Audience :: Science/Research',
+        'License :: OSI Approved :: MIT License',
+        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.12',
+        'Topic :: Scientific/Engineering',
+        'Topic :: Scientific/Engineering :: Artificial Intelligence',
+        'Topic :: Software Development',
+        'Topic :: Software Development :: Libraries',
+        'Topic :: Software Development :: Libraries :: Python Modules',
+]
+dependencies = [
+    'torch>=2.0',
+    'torchvision',
+    'regex',
+    'ftfy',
+    'tqdm',
+    'huggingface-hub',
+    'safetensors',
+    'timm>=1.0.17',
+]
+dynamic = ["version"]
+
+[project.optional-dependencies]
+training = [
+    'torch>=2.0',
+    'webdataset>=0.2.5,<=0.2.86',
+    'pandas',
+    'transformers[sentencepiece]',
+    'timm>=1.0.17',
+    'fsspec',
+]
+eval = [
+    # Qwen3-VL-Embedding branch needs transformers>=4.57 (model_type=qwen3_vl);
+    # kept separate from the training pin. See requirements-eval.txt.
+    'transformers[sentencepiece]>=4.57.1',
+    'tokenizers>=0.22.2',
+    'sentence-transformers>=3.0.0',
+    'datasets>=2.14.0',
+    'numpy',
+    'pillow',
+    'braceexpand',
+    'tqdm',
+]
+
+[project.urls]
+homepage = "https://github.com/ernie-research/CoVisco"
+repository = "https://github.com/ernie-research/CoVisco"
+
+[tool.pdm.version]
+source = "file"
+path = "src/open_clip/version.py"
+
+[tool.pdm.build]
+excludes = ["./**/.git", "./**/logs/*"]
+package-dir = "src"
+includes = ["src/open_clip", "src/open_clip_train"]

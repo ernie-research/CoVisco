@@ -1,0 +1,9 @@
+# Model checkpoints / weights
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+*.bin
+
+# HuggingFace release artifacts
+CoVisco_ViT/hf_release/

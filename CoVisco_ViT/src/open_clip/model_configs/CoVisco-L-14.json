@@ -1,0 +1,29 @@
+{
+    "embed_dim": 1024,
+    "vision_cfg": {
+        "image_size": 224,
+        "patch_size": 14,
+        "layers": 24,
+        "width": 1024,
+        "head_width": 64,
+        "num_query_per_seg": 100,
+        "segment_t_size": 32,
+        "rope_theta": 10000.0
+    },
+    "text_cfg": {
+        "context_length": 64,
+        "vocab_size": 256000,
+        "width": 1024,
+        "heads": 16,
+        "layers": 24,
+        "no_causal_mask": true,
+        "proj_bias": true,
+        "pool_type": "last",
+        "norm_kwargs": {
+            "eps": 1e-6
+        },
+        "act_kwargs": {
+            "approximate": "tanh"
+        }
+    }
+}

@@ -1,0 +1,17 @@
+torch>=2.0
+torchvision
+webdataset>=0.2.5,<=0.2.86
+regex
+ftfy
+tqdm
+pandas
+braceexpand
+huggingface_hub
+safetensors
+transformers[sentencepiece]>=4.40.0,<4.50.0
+timm>=1.0.17
+fsspec
+# Video processing libraries (for efficient in-memory video loading)
+imageio>=2.28.0
+imageio-ffmpeg>=0.4.9
+av>=11.0.0

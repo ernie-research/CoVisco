@@ -1,0 +1,29 @@
+# Evaluation dependencies for CoVisco_ViT.
+# Install on top of the base package:
+#     pip install -e .            # base: torch / torchvision / timm / ...
+#     pip install -r requirements-eval.txt
+#
+# Why a separate (newer) transformers than training:
+# The Qwen3-VL-Embedding branch evaluators
+#   - eval_mme_v2_all.py (wrapper run_mme_v2_all_qwen3-vl.sh)
+#   - eval_mmeb_video_retrieval.py
+# load Qwen3-VL-Embedding-8B via SentenceTransformer. Its config.json declares
+# "model_type": "qwen3_vl", an architecture that only exists in transformers >= 4.57.
+# Older versions (e.g. 4.51.x used for training) raise `KeyError: 'qwen3_vl'` in
+# AutoConfig.from_pretrained. Keep this environment separate from the training env
+# (requirements-training.txt pins transformers < 4.50).
+transformers[sentencepiece]>=4.57.1
+tokenizers>=0.22.2
+sentence-transformers>=3.0.0
+
+# HuggingFace datasets: several evaluators pull annotations / corpora via
+# `datasets.load_dataset` (image_cls, visdoc, video_ret, XM3600). Needs network
+# access to huggingface.co at eval time (set a proxy if behind a firewall).
+# `huggingface_hub` is already provided by the base package.
+datasets>=2.14.0
+
+# Shared eval utilities (image/frame loading, shard globbing, progress bars)
+numpy
+pillow
+braceexpand
+tqdm

@@ -1,0 +1,32 @@
+# Shared Ruff configuration for the CoVisco repository (CoVisco_ViT + CoVisco_sft).
+# Ruff is a single fast tool that covers linting and formatting, replacing the
+# flake8 / isort / pyflakes / pycodestyle stack.
+#
+# Verify locally:
+#   pip install ruff
+#   ruff check .          # lint
+#   ruff format --check . # formatting check (run `ruff format .` to apply)
+
+target-version = "py39"
+line-length = 120
+
+# Vendored upstream code and non-source assets are not held to this baseline.
+extend-exclude = [
+    "**/third_party/**",
+    "figures",
+    "**/*.ipynb",
+    "**/.zeroshot_cache/**",
+    "build",
+    "dist",
+]
+
+[lint]
+# Conservative, high-signal baseline: correctness over style nits.
+#   E9      syntax errors
+#   F       pyflakes (undefined names, unused imports/variables, f-string issues)
+#   W291/3  trailing whitespace / blank-line whitespace
+#   I       import sorting
+select = ["E9", "F", "W291", "W293", "I"]
+
+[format]
+quote-style = "preserve"

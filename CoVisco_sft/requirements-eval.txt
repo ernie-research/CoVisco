@@ -1,0 +1,74 @@
+# ---------------------------------------------------------------------------
+# Evaluation dependencies for CoVisco_sft (lmms-eval based).
+#
+# These are the runtime deps of the vendored third_party/lmms-eval, MINUS the
+# packages already provided by requirements.txt (torch / torchvision / timm) and
+# MINUS transformers.
+#
+# IMPORTANT: transformers is intentionally omitted. requirements.txt pins it to
+# >=4.51,<4.52 (needed for Qwen3, model_type=qwen3). lmms-eval only declares
+# transformers>=4.39.2 (no upper bound), so letting it resolve transformers here
+# could silently upgrade past the pin and break model loading. Install this file
+# with a constraint (see scripts/setup_eval_env.sh) to keep the pin.
+#
+# Install order (see scripts/setup_eval_env.sh):
+#   pip install -r requirements.txt
+#   pip install -c <(echo "transformers>=4.51.0,<4.52.0") -r requirements-eval.txt
+#   pip install -e third_party/lmms-eval --no-deps --no-build-isolation
+# ---------------------------------------------------------------------------
+
+# Launcher used by the eval_covisco*.sh scripts (accelerate.commands.launch)
+accelerate>=0.29.1
+
+# Dataset / benchmark loading and scoring
+datasets>=2.19.0
+evaluate>=0.4.0
+scikit-learn>=0.24.1
+sacrebleu>=1.5.0
+pycocoevalcap
+nltk
+sqlitedict>=2.1.0
+pytablewriter
+numexpr
+numpy>=1.26.4
+
+# Video / image decoding (llava_covisco adapter decodes mp4 via OpenCV)
+opencv-python-headless
+av<16.0.0
+pillow
+
+# Core runtime libs imported by lmms-eval
+einops
+ftfy
+sentencepiece
+loguru
+tqdm-multiprocess
+pyyaml
+tenacity>=8.3.0
+tiktoken
+pydantic
+packaging
+protobuf
+jsonlines
+aiohttp
+httpx>=0.23.3
+zstandard
+sympy
+mpmath
+latex2sympy2
+Jinja2
+openpyxl
+zss
+peft>=0.2.0
+hf_transfer
+transformers-stream-generator
+qwen-vl-utils>=0.0.14
+sentence_transformers
+python-dotenv
+wandb>=0.16.0
+openai
+
+# Metrics for OCR / document-answer tasks (docvqa / infovqa / anls-style)
+anls
+rouge
+Levenshtein
