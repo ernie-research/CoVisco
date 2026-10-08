@@ -5,7 +5,7 @@
 [![Paper](https://img.shields.io/badge/arXiv-2609.39924-b31b1b.svg)](https://arxiv.org/pdf/2609.39924)
 [![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-CoVisco--L--14-ffcc4d.svg)](https://huggingface.co/ernie-research/CoVisco-L-14)
 
-> **Model weights:** the CoVisco-L-14 vision encoder will be released on Hugging Face — [`ernie-research/CoVisco-L-14`](https://huggingface.co/ernie-research/CoVisco-L-14).
+> **Model weights:** the CoVisco-L-14 vision encoder has been released on Hugging Face — [`ernie-research/CoVisco-L-14`](https://huggingface.co/ernie-research/CoVisco-L-14).
 
 ## Overview
 
