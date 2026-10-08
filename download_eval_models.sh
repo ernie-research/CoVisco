@@ -86,11 +86,11 @@ Done. Models are under: $MODELS_DIR
 Point the eval entry points at them:
 
   CoVisco_ViT (video branch):
-    TEXT_MODEL=$MODELS_DIR/Qwen3-VL-Embedding-8B bash run_mme_v2_all_qwen3-vl.sh
-    # or: python eval_mmeb_video_retrieval.py --text_model_path $MODELS_DIR/Qwen3-VL-Embedding-8B ...
+    TEXT_MODEL=$MODELS_DIR/Qwen3-VL-Embedding-8B bash eval/run_mme_v2_all_qwen3-vl.sh
+    # or: python eval/eval_mmeb_video_retrieval.py --text_model_path $MODELS_DIR/Qwen3-VL-Embedding-8B ...
 
   CoVisco_ViT (SigLIP2 branch):
-    python eval_zeroshot_siglip2.py --siglip2_dir $MODELS_DIR/ViT-gopt-16-SigLIP2-384 ...
+    python eval/eval_zeroshot_siglip2.py --siglip2_dir $MODELS_DIR/ViT-gopt-16-SigLIP2-384 ...
     # (optional; open_clip auto-downloads timm/ViT-gopt-16-SigLIP2-384 via pretrained=webli)
 
   CoVisco_sft:

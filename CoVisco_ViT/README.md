@@ -31,11 +31,13 @@ CoVisco_ViT/
 ├── src/open_clip_train/
 │   └── main_covisco.py                  # training entry (SigLIP + multi contrast pairs + reconstruction)
 ├── scripts/                             # training launch scripts (MODEL_NAME=CoVisco-L-14)
-├── eval_imagenet_zeroshot.py            # ImageNet zero-shot (SigLIP2 branch)
-├── eval_*_siglip2.py                    # image classification / retrieval (SigLIP2 branch)
-├── eval_mmeb_video_retrieval.py         # video retrieval (Qwen3-VL-Embedding branch)
-├── covisco_hf.py                        # shared loader for the *_hf.py evaluators (HF release)
-├── eval_*_hf.py                         # HF-release variants of the evaluators (load config.json + model.safetensors)
+├── eval/                                # evaluation scripts + shell wrappers
+│   ├── eval_zeroshot_siglip2.py         # zero-shot classification / retrieval (SigLIP2 branch)
+│   ├── eval_mme_v2_all*.py              # unified MMEB-V2 suite (SigLIP2 + Qwen3-VL-Embedding branches)
+│   ├── eval_mmeb_video_retrieval*.py    # video retrieval (Qwen3-VL-Embedding / SigLIP2 branches)
+│   ├── covisco_hf.py                    # shared loader for the *_hf.py evaluators (HF release)
+│   ├── eval_*_hf.py                     # HF-release variants (load config.json + model.safetensors)
+│   └── run_*.sh                         # shell wrappers for the evaluators
 ├── hf_release/CoVisco-L-14/             # self-contained HF release (config.json, model.safetensors, loader)
 └── docs/                                # preprocessing and data notes
 ```
@@ -75,12 +77,12 @@ The model is loaded by name `CoVisco-L-14` via `open_clip.create_model_and_trans
 Which teacher branch an evaluation uses depends on the task family:
 
 - **Image classification / retrieval → SigLIP2 branch.** Image embeddings come from the `to_image_caption` head and are matched against the SigLIP2 text tower (`ViT-gopt-16-SigLIP2-384`). The checkpoint must have been trained with `image_caption_embed_dim=1536`. Scripts carry the `_siglip2` suffix.
-- **Video classification / retrieval/VisDoc → Qwen3-VL-Embedding branch.** Embeddings come from the `to_video_caption` head (`video_caption_embed_dim=4096`) and are matched against the `Qwen3-VL-Embedding-8B` text encoder. `eval_mme_v2_all.py` (wrapper: `run_mme_v2_all_qwen3-vl.sh`) is the unified MMEB-V2 evaluator on this branch and runs the full meta-task suite (`video_ret` / `video_cls` / `video_mret` plus `image_cls` / `visdoc`).
+- **Video classification / retrieval/VisDoc → Qwen3-VL-Embedding branch.** Embeddings come from the `to_video_caption` head (`video_caption_embed_dim=4096`) and are matched against the `Qwen3-VL-Embedding-8B` text encoder. `eval/eval_mme_v2_all.py` (wrapper: `eval/run_mme_v2_all_qwen3-vl.sh`) is the unified MMEB-V2 evaluator on this branch and runs the full meta-task suite (`video_ret` / `video_cls` / `video_mret` plus `image_cls` / `visdoc`).
 
 **MMEB-V2 is evaluated with both branches.** We provide two MMEB-V2 evaluators, one per teacher text encoder:
 
-- **SigLIP2 branch** — `eval_mme_v2_all_siglip2.py` (wrapper `run_mme_v2_all_siglip2.sh`), matched against the SigLIP2 text tower via the `to_image_caption` head. The SigLIP2 text encoder only supports **short text** (a fixed, small token budget, ~64 tokens), so it is appropriate for tasks whose queries/captions are short; longer prompts get truncated.
-- **Qwen3-VL-Embedding branch** — `eval_mme_v2_all.py` (wrapper `run_mme_v2_all_qwen3-vl.sh`), matched against `Qwen3-VL-Embedding-8B` via the `to_video_caption` head. This LLM-based text encoder supports **long text**, so it handles long instructions/queries without truncation and covers the full MMEB-V2 meta-task suite.
+- **SigLIP2 branch** — `eval/eval_mme_v2_all_siglip2.py` (wrapper `eval/run_mme_v2_all_siglip2.sh`), matched against the SigLIP2 text tower via the `to_image_caption` head. The SigLIP2 text encoder only supports **short text** (a fixed, small token budget, ~64 tokens), so it is appropriate for tasks whose queries/captions are short; longer prompts get truncated.
+- **Qwen3-VL-Embedding branch** — `eval/eval_mme_v2_all.py` (wrapper `eval/run_mme_v2_all_qwen3-vl.sh`), matched against `Qwen3-VL-Embedding-8B` via the `to_video_caption` head. This LLM-based text encoder supports **long text**, so it handles long instructions/queries without truncation and covers the full MMEB-V2 meta-task suite.
 
 So on MMEB-V2, pick the SigLIP2 evaluator for short-text tasks and the Qwen3-VL-Embedding evaluator for long-text (and the full suite). Both read the same `CoVisco-L-14` checkpoint; they differ only in which teacher text encoder and projection head are used.
 
@@ -110,19 +112,19 @@ Your own `CoVisco-L-14.pt` checkpoint is a separate trained artifact and is not 
 # (ImageNet / COCO / Flickr / XM3600); modes: smoke | cls | retrieval | imagenet | all
 CKPT=/path/to/CoVisco-L-14.pt IMAGE_SIZE=224 \
     IMAGENET1K_WDS="/path/to/imagenet/val/{0..6}.tar" \
-    bash run_zeroshot_siglip2.sh all
+    bash eval/run_zeroshot_siglip2.sh all
 
 # MME-V2 in the SigLIP2 text space
-CKPT=/path/to/CoVisco-L-14.pt bash run_mme_v2_all_siglip2.sh
+CKPT=/path/to/CoVisco-L-14.pt bash eval/run_mme_v2_all_siglip2.sh
 
 # --- Video tasks: Qwen3-VL-Embedding branch ---
 # Unified MMEB-V2 suite (video_ret / video_cls / video_mret / image_cls / visdoc);
 # modes: smoke | video | image | visdoc | all
 CKPT=/path/to/CoVisco-L-14.pt TEXT_MODEL=/path/to/Qwen3-VL-Embedding-8B \
-    bash run_mme_v2_all_qwen3-vl.sh all
+    bash eval/run_mme_v2_all_qwen3-vl.sh all
 
 # MMEB-V2 video retrieval — no shell wrapper; run the evaluator directly
-python eval_mmeb_video_retrieval.py --ckpt /path/to/CoVisco-L-14.pt \
+python eval/eval_mmeb_video_retrieval.py --ckpt /path/to/CoVisco-L-14.pt \
     --text_model_path /path/to/Qwen3-VL-Embedding-8B --video_caption_embed_dim 4096
 ```
 
@@ -135,7 +137,7 @@ open_clip `.pt` training checkpoint. This removes the `open_clip` dependency for
 the vision tower; the teacher text encoders (SigLIP2 / Qwen3-VL) are unchanged,
 so the same eval environment and text-model pre-download apply.
 
-The twins are thin wrappers (shared loader in `covisco_hf.py`) that reuse all
+The twins are thin wrappers (shared loader in `eval/covisco_hf.py`) that reuse all
 dataset / metric / text-encoder logic from the base evaluators. They replace
 `--ckpt` with `--hf_model`, which accepts either a local release directory or a
 Hub repo id (auto `snapshot_download`; set `HF_TOKEN` / proxy for a private
@@ -145,17 +147,17 @@ repo). `--hf_model` defaults to the Hub repo `ernie-research/CoVisco-L-14` (set
 
 ```bash
 # Image tasks, SigLIP2 branch — load from a local release dir
-python eval_zeroshot_siglip2_hf.py --tasks classification retrieval \
+python eval/eval_zeroshot_siglip2_hf.py --tasks classification retrieval \
     --hf_model hf_release/CoVisco-L-14 --image_size 224 \
     --imagenet1k_wds "/path/to/imagenet/val/{0..6}.tar"
 
 # Video tasks, Qwen3-VL branch — default Hub repo (ernie-research/CoVisco-L-14; set HF_TOKEN)
-python eval_mme_v2_all_hf.py \
+python eval/eval_mme_v2_all_hf.py \
     --data_root /path/to/mme_v2 --text_model_path /path/to/Qwen3-VL-Embedding-8B
 
-# Other twins: eval_mmeb_video_retrieval_hf.py,
-#              eval_mmeb_video_retrieval_siglip2_hf.py,
-#              eval_mme_v2_all_siglip2_hf.py
+# Other twins: eval/eval_mmeb_video_retrieval_hf.py,
+#              eval/eval_mmeb_video_retrieval_siglip2_hf.py,
+#              eval/eval_mme_v2_all_siglip2_hf.py
 ```
 
 The three shell wrappers have `_hf` counterparts too (same modes
@@ -166,13 +168,13 @@ override):
 
 ```bash
 # SigLIP2 branch, zero-shot (HF_MODEL defaults to ernie-research/CoVisco-L-14; set HF_TOKEN)
-bash run_zeroshot_siglip2_hf.sh all
+bash eval/run_zeroshot_siglip2_hf.sh all
 
 # SigLIP2 branch, MME-V2 — override with a local release dir
-HF_MODEL=hf_release/CoVisco-L-14 bash run_mme_v2_all_siglip2_hf.sh all
+HF_MODEL=hf_release/CoVisco-L-14 bash eval/run_mme_v2_all_siglip2_hf.sh all
 
 # Qwen3-VL-Embedding branch, MME-V2 (default Hub repo)
-TEXT_MODEL=/path/to/Qwen3-VL-Embedding-8B bash run_mme_v2_all_qwen3-vl_hf.sh all
+TEXT_MODEL=/path/to/Qwen3-VL-Embedding-8B bash eval/run_mme_v2_all_qwen3-vl_hf.sh all
 ```
 
 > The released `config.json` sets `segment_t_size=32`; the `*_hf.py` video
@@ -183,7 +185,9 @@ TEXT_MODEL=/path/to/Qwen3-VL-Embedding-8B bash run_mme_v2_all_qwen3-vl_hf.sh all
 #### Extracting representations directly
 
 To get features in your own code (not through an evaluator), load the release
-with `covisco_hf.load_vision_model` and call the model. The forward returns the
+with `covisco_hf.load_vision_model` and call the model. The loader lives at
+`eval/covisco_hf.py`, so run these snippets from the `eval/` directory (or add
+it to `sys.path` / `PYTHONPATH` before importing). The forward returns the
 **pooled** embedding by default; pass `return_intermediates=True` to also get
 the **pre-pooling** token representations. The input layout differs between
 images and videos.

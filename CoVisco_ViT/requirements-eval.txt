@@ -5,8 +5,8 @@
 #
 # Why a separate (newer) transformers than training:
 # The Qwen3-VL-Embedding branch evaluators
-#   - eval_mme_v2_all.py (wrapper run_mme_v2_all_qwen3-vl.sh)
-#   - eval_mmeb_video_retrieval.py
+#   - eval/eval_mme_v2_all.py (wrapper eval/run_mme_v2_all_qwen3-vl.sh)
+#   - eval/eval_mmeb_video_retrieval.py
 # load Qwen3-VL-Embedding-8B via SentenceTransformer. Its config.json declares
 # "model_type": "qwen3_vl", an architecture that only exists in transformers >= 4.57.
 # Older versions (e.g. 4.51.x used for training) raise `KeyError: 'qwen3_vl'` in

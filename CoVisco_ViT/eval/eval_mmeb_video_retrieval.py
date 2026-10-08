@@ -29,7 +29,7 @@ from PIL import Image
 from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 # ---------------------------------------------------------------------------
 # Dataset config: (local_jsonl_name, hf_repo, hf_subset, hf_split,

@@ -87,7 +87,7 @@ import torch.nn.functional as F
 from PIL import Image
 from torchvision import transforms
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 # Reuse the proven pieces from the retrieval reference script. These helpers are
 # extension-agnostic / side-effect free at import time. `load_model` is
