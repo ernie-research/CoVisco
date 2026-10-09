@@ -27,7 +27,7 @@ NUM_WORKERS="${NUM_WORKERS:-4}"
 NUM_FRAMES="${NUM_FRAMES:-64}"        # frames uniformly sampled per clip (get_segments path)
 SEGMENT_T_SIZE="${SEGMENT_T_SIZE:-16}" # temporal segment size; NUM_FRAMES must be a multiple of it
 RAW_LABELS="${RAW_LABELS:-0}"         # set to 1 to disable label cleaning (A/B)
-NATIVE_RES="${NATIVE_RES:-0}"         # set to 1 for native-resolution preprocessing
+NATIVE_RES="${NATIVE_RES:-1}"         # 1 (default): native-resolution preprocessing; set 0 to disable
 MAX_IMAGE_SIDE="${MAX_IMAGE_SIDE:-1400}"  # long-side cap (px) when NATIVE_RES=1
 # Set DISTRIBUTED=1 to let this wrapper launch torchrun. For multi-node runs,
 # also set DIST_NNODES, DIST_NODE_RANK, DIST_MASTER_ADDR and DIST_MASTER_PORT.
