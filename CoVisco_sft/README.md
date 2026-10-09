@@ -9,7 +9,7 @@ This directory is **Stage 2** of the two-stage **CoVisco** pipeline (Codec-Nativ
 - **Dynamic token strategy**: randomly picks query_only / vit_only / query_and_vit at training time
 - **Configurable sms**: currently sms=1 (no spatial merge), with sms=2/3 interfaces reserved
 - **2-layer MLP projector** (consistent with LLaVA-OneVision-2)
-- **SFT data reuse LLaVA-OneVision-2 directly**, adapting only query/vit token handling at the model boundary
+- **SFT data reuse OneVision-Encoder directly**, adapting only query/vit token handling at the model boundary
 
 ## Directory Layout
 
