@@ -42,6 +42,27 @@ NPROC_PER_NODE=8 NNODES=1 bash scripts/run_sft_4b_instruct2507.sh
 
 In the config, `vit.pretrained_path` points to the `CoVisco-L-14` weights produced by CoVisco_ViT; `vit.name` is `CoVisco-L-14`.
 
+### Loading the ViT from Hugging Face
+
+`vit.pretrained_path` accepts four source types, auto-detected by `models/covisco_vit_checkpoint.py::load_vit_weights_direct`:
+
+- a local training checkpoint `*.pt`,
+- a local `*.safetensors` file,
+- a local Hugging Face release directory (containing `model.safetensors`),
+- a Hugging Face Hub repo id — e.g. the released encoder [`ernie-research/CoVisco-L-14`](https://huggingface.co/ernie-research/CoVisco-L-14) (fetched via `snapshot_download`; set `HF_TOKEN` for a private/gated repo).
+
+```yaml
+vit:
+  name: CoVisco-L-14
+  # pick ONE of:
+  pretrained_path: ernie-research/CoVisco-L-14        # Hub repo id
+  # pretrained_path: /path/to/CoVisco-L-14            # local HF release dir
+  # pretrained_path: /path/to/CoVisco-L-14.safetensors
+  # pretrained_path: /path/to/CoVisco-L-14.pt
+```
+
+Loading matches encoder tensors by exact name after stripping `module.`/`model.`/`encoder.` prefixes; the HF release's extra top-level weights (`head.*`, `visual.*` alias, `logit_*`, `proj_to_*`) are reported as *unexpected* and skipped — this is expected. The architecture fields under `vit.*` must match the release's `covisco_encoder_cfg` in `config.json` (hidden_size, num_layers, patch_size, etc.); mismatches are skipped as shape errors. Needs `safetensors` + `huggingface_hub` (both already in `requirements.txt`).
+
 ## Data Flow
 
 Training reads WebDataset tar shards through `data/wds_dataset.py::CoViscoWDSDataset` — this is the **actual training path** (`--data-backend fallback_wds`, the default used by all SFT scripts); it is a self-contained streaming tar reader with no dependency on the `webdataset` package. The alternative `--data-backend llava_onevision` is a placeholder that currently raises `NotImplementedError`; it is meant for plugging in LLaVA-OneVision-2's external dataloader, in which case `data/llava_batch_adapter.py` converts a LLaVA/Energon batch into this model's fields at the model boundary. See `docs/data_alignment.md`.

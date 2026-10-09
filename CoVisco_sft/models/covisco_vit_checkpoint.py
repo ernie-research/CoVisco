@@ -1,11 +1,49 @@
 """Utilities for loading CoVisco ViT checkpoints."""
 from __future__ import annotations
 
+import os
 from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 
 import torch
+
+
+def _resolve_source(path_or_repo: str | Path) -> Mapping[str, torch.Tensor]:
+    """Return a raw (un-remapped) state_dict from any supported source.
+
+    Supports:
+      * a local PyTorch ``.pt`` training checkpoint,
+      * a local ``.safetensors`` file,
+      * a local HuggingFace release directory (containing model.safetensors),
+      * a HuggingFace Hub repo id (downloaded via snapshot_download).
+    """
+    p = Path(path_or_repo)
+
+    # 1) Local .pt checkpoint
+    if p.suffix == ".pt" and p.exists():
+        return _unwrap_state_dict(torch.load(str(p), map_location="cpu"))
+
+    # 2) Local .safetensors file
+    if p.suffix == ".safetensors" and p.exists():
+        from safetensors.torch import load_file
+
+        return load_file(str(p))
+
+    # 3) Local HF release directory, or a Hub repo id to download
+    if p.is_dir():
+        model_dir = str(p)
+    else:
+        from huggingface_hub import snapshot_download
+
+        model_dir = snapshot_download(repo_id=str(path_or_repo), repo_type="model")
+
+    safetensors_path = os.path.join(model_dir, "model.safetensors")
+    if not os.path.exists(safetensors_path):
+        raise FileNotFoundError(f"model.safetensors not found in {model_dir}")
+    from safetensors.torch import load_file
+
+    return load_file(safetensors_path)
 
 
 def _unwrap_state_dict(checkpoint: Any) -> Mapping[str, torch.Tensor]:
@@ -31,17 +69,15 @@ def load_vit_weights_direct(
 ) -> dict:
     """Load ViT weights by exact name matching (for original SigLIP naming).
 
-    After removing the module./model. prefixes from checkpoint keys, match them
-    exactly against vision_model.state_dict() keys; skip shape mismatches.
+    ``checkpoint_path`` may be a local ``.pt`` / ``.safetensors`` file, a local
+    HuggingFace release directory, or a HuggingFace Hub repo id (e.g.
+    ``ernie-research/CoVisco-L-14``). After removing the module./model./encoder.
+    prefixes from checkpoint keys, match them exactly against
+    vision_model.state_dict() keys; skip shape mismatches.
     """
-    checkpoint_path = Path(checkpoint_path)
-    if not checkpoint_path.exists():
-        raise FileNotFoundError(f"ViT checkpoint not found: {checkpoint_path}")
-
-    raw = torch.load(str(checkpoint_path), map_location="cpu")
     # Strip module./model. and then encoder. to align with self.vit.encoder names
     source = {}
-    for k, v in _unwrap_state_dict(raw).items():
+    for k, v in _resolve_source(checkpoint_path).items():
         if not torch.is_tensor(v):
             continue
         k = _strip_prefix(k)          # Remove the module./model. prefix

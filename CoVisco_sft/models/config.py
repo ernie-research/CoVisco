@@ -11,7 +11,7 @@ from typing import Any, Dict, Optional, Tuple
 @dataclass
 class ViTConfig:
     name: str = "CoVisco-L-14"
-    pretrained_path: str = ""  # Optional path to pretrained CoVisco encoder weights
+    pretrained_path: str = ""  # Local .pt/.safetensors file, HF release dir, or Hub repo id (e.g. ernie-research/CoVisco-L-14)
     hidden_size: int = 1024
     num_layers: int = 24
     num_attention_heads: int = 16
