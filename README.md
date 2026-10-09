@@ -82,9 +82,7 @@ The handoff between stages is the `CoVisco-L-14` checkpoint: Stage 2 loads it vi
 
 ## Model Weights
 
-Hugging Face weights: **coming soon** (not yet released).
-
-<!-- 🤗 Hugging Face: TBD -->
+The `CoVisco-L-14` vision encoder is released on Hugging Face: [`ernie-research/CoVisco-L-14`](https://huggingface.co/ernie-research/CoVisco-L-14).
 
 ## Getting Started
 
@@ -99,6 +97,42 @@ cd CoVisco_ViT
 cd CoVisco_sft
 # see CoVisco_sft/README.md
 ```
+
+## Using the Released Encoder
+
+The `CoVisco-L-14` vision encoder is on Hugging Face and loads via the standard
+`from_pretrained` API (`trust_remote_code=True` ships the modeling code). It
+encodes images and videos in a unified way and returns L2-normalized embeddings.
+
+```bash
+pip install torch torchvision pillow "transformers>=4.37"
+```
+
+```python
+from transformers import AutoModel
+from PIL import Image
+
+model = AutoModel.from_pretrained("ernie-research/CoVisco-L-14",
+                                  trust_remote_code=True).eval().cuda()  # .cpu() if no GPU
+
+# image -> (1, 1536), SigLIP2 space
+img_emb = model.encode_image(Image.open("your.jpg"))
+
+# native-resolution image (keeps aspect ratio; good for text-heavy pages)
+pp = model.build_native_preprocess(max_side=1400)
+doc_emb = model.encode_image(Image.open("doc_page.png"), pp)
+
+# video -> (1, 4096), Qwen3-VL-Embedding space (read_video_frames needs PyAV)
+model.set_segment_t_size(16)
+frames = model.read_video_frames("video.mp4", num_frames=16)
+vid_emb = model.encode_video(frames, model.build_preprocess(size=224))
+```
+
+Batched helpers (`embed_images` / `embed_videos`), token-level outputs
+(`return_intermediates=True`), and codec-based sparse token filtering are also
+available. For the full interface — branches, native resolution, video, codec
+filtering, and the raw `forward` — see
+[`https://huggingface.co/ernie-research/CoVisco-L-14/README.md`](https://huggingface.co/ernie-research/CoVisco-L-14).
 
 ## Citation
 
