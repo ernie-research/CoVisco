@@ -8,7 +8,7 @@ This directory is **Stage 2** of the two-stage **CoVisco** pipeline (Codec-Nativ
 - **Reuses the query-guided `LearnableTokenSelector`** (selects key visual tokens from ViT patch tokens — native token compression)
 - **Dynamic token strategy**: randomly picks query_only / vit_only / query_and_vit at training time
 - **Configurable sms**: currently sms=1 (no spatial merge), with sms=2/3 interfaces reserved
-- **2-layer MLP projector** (consistent with LLaVA-OneVision-2)
+- **2-layer MLP projector** (consistent with OneVision-Encoder)
 - **SFT data reuse OneVision-Encoder directly**, adapting only query/vit token handling at the model boundary
 
 ## Directory Layout
