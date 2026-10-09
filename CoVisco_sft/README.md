@@ -1,6 +1,6 @@
 # CoVisco LLM SFT — Multimodal Alignment & Instruction Tuning
 
-This directory is **Stage 2** of the two-stage **CoVisco** pipeline (Codec-Native Vision Encoder with Native Token Compression for Efficient Unified Visual Understanding): it attaches the CoVisco vision encoder pretrained in [`../CoVisco_ViT`](../CoVisco_ViT) to a Qwen3 LLM, reusing the [LLaVA-OneVision-2](https://github.com/) SFT framework. We do **not** run a separate mid-training stage — the pretrained encoder goes directly into instruction tuning.
+This directory is **Stage 2** of the two-stage **CoVisco** pipeline (Codec-Native Vision Encoder with Native Token Compression for Efficient Unified Visual Understanding): it attaches the CoVisco vision encoder pretrained in [`../CoVisco_ViT`](../CoVisco_ViT) to a Qwen3 LLM,  We do **not** run a separate mid-training stage — the pretrained encoder goes directly into instruction tuning.
 
 ## Key Features
 
